@@ -1,0 +1,19 @@
+{
+  "name": "punk-chat",
+  "version": "1.0.0",
+  "description": "Punk Chat",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "babel src -d lib"
+  },
+  "author": "Vasili Gorodensky",
+  "dependencies": {
+    "body-parser": "1.18.3",
+    "express": "4.16.3",
+    "uniqid": "5.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "6.26.0",
+    "babel-preset-env": "1.7.0"
+  }
+}
