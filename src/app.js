@@ -1,73 +1,36 @@
-import express from 'express';
-import bodyParser from 'body-parser';
+import Koa from 'koa';
 
-import ChatRoomManager from './model/ChatRoomManager';
+import Error from './middleware/Error';
+import ResponseTime from './middleware/ResponseTime';
 
+/**
+ * Koa-application
+ */
 export default class Application {
-
-    constructor() {
-        this.expressApp = express();
-        this.manager = new ChatRoomManager();
-        this.attachRoutes();
+    constructor(port) {
+        this.port = port;
+        this.app = new Koa;
+        this.addMiddleware();
+        this.addErrorHandling();
     }
 
-    attachRoutes() {
-        let app = this.expressApp;
-        let jsonParser = bodyParser.json();
-
-        app.get('/rooms', this.roomSearchHandler.bind(this));
-        app.post('/rooms', jsonParser, this.createRoomHandler.bind(this));
-        app.get('/rooms/:roomId/messages', this.getMessagesHandler.bind(this));
-        app.post('/rooms/:roomId/messages', jsonParser, this.postMessageHandler.bind(this));
+    /**
+     * Start application
+     * @param callback - callback after start success
+     */
+    start(callback) {
+        this.app.listen(this.port, () => callback());
     }
 
-    createRoomHandler(req, res) {
-        if (!req.body.name) {
-            res.status(400).json({});
-        } else {
-            let room = this.manager.createRoom(req.body.name);
-            let response = {
-                room: room.toJson(),
-            };
-            res.json(response);
-        }
+    addMiddleware() {
+        const { app } = this;
+        app.use(Error.emitter);
+        app.use(ResponseTime.logRequest);
+        app.use(ResponseTime.setHeader);
+        app.use(ctx => ctx.body = 'Hello!');
     }
 
-    getMessagesHandler(req, res) {
-        let room = this.manager.getById(req.params.roomId);
-        if (!room) {
-            res.status(404).json({});
-        } else {
-            let messagesJson = room.messages.map(message => message.toJson());
-            let response = {
-                messages: messagesJson,
-            };
-            res.json(response);
-        }
-    }
-
-    postMessageHandler(req, res) {
-        let room = this.manager.getById(req.params.roomId);
-        if (!room) {
-            res.status(404).json({});
-        } else if (!req.body.body || !req.body.username) {
-            res.status(400).json({});
-        } else {
-            let message = room.postMessage(req.body.body, req.body.username);
-            let response = {
-                message: message.toJson(),
-            };
-            res.json(response);
-        }
-    }
-
-    roomSearchHandler(req, res) {
-        let searchString = req.query.searchString || '';
-        let rooms = this.manager.findByName(searchString);
-        let roomsJson = rooms.map(room => room.toJson());
-        let response = {
-            rooms: roomsJson,
-        };
-        res.json(response);
+    addErrorHandling() {
+        this.app.on(Error.ERROR, Error.handler);
     }
 }
