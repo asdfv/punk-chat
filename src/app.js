@@ -2,6 +2,7 @@ import Koa from 'koa';
 
 import Error from './middleware/Error';
 import ResponseTime from './middleware/ResponseTime';
+import Mongo from './db/Mongo';
 
 /**
  * Koa-application
@@ -9,17 +10,18 @@ import ResponseTime from './middleware/ResponseTime';
 export default class Application {
     constructor(port) {
         this.port = port;
-        this.app = new Koa;
-        this.addMiddleware();
-        this.addErrorHandling();
+        this.app = new Koa();
+        this.db = new Mongo();
     }
 
     /**
      * Start application
-     * @param callback - callback after start success
      */
-    start(callback) {
-        this.app.listen(this.port, () => callback());
+    async start() {
+        this.addMiddleware();
+        this.addErrorHandling();
+        await this.db.connect();
+        await this.app.listen(this.port);
     }
 
     addMiddleware() {

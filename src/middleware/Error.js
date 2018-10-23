@@ -1,5 +1,5 @@
 import loggerFunc from '../helpers/Logger';
-const logger = loggerFunc(module);
+const log = loggerFunc(module);
 
 /**
  * Emit an error if it occurs in the chain of middleware
@@ -18,7 +18,7 @@ const emitter = async (ctx, next) => {
  * Handle error emitted by @emitter
  */
 const handler = (err, ctx) => {
-    logger.error(err.stack);
+    log.error(err.stack);
     ctx.body = 'Something broke!';
 };
 

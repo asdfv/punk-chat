@@ -2,9 +2,9 @@ import { createLogger, format, transports } from 'winston';
 const { combine, timestamp, printf } = format;
 
 /**
- * Return customized winston logger
+ * Customized winston logger
  */
-const logger = (callingModule) => createLogger({
+const logger = callingModule => createLogger({
     format: combine(
         timestamp(),
         logFormat(callingModule)
@@ -21,4 +21,4 @@ const logFormat = (callingModule) => {
 
 const getLabel = callingModule => callingModule.filename.replace(/^.*[\\/]/, '');
 
-export default logger;
+export default logger

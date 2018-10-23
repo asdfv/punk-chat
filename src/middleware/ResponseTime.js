@@ -1,5 +1,5 @@
 import loggerFunc from '../helpers/Logger';
-const logger = loggerFunc(module);
+const log = loggerFunc(module);
 
 const RESPONSE_TIME = 'response-time';
 
@@ -13,7 +13,7 @@ const setHeader = async (ctx, next) => {
 const logRequest = async (ctx, next) => {
     await next();
     const time = ctx.response.get(RESPONSE_TIME);
-    logger.info(`[${ctx.method}] ${ctx.url}, time: ${time}`);
+    log.info(`[${ctx.method}] ${ctx.url}, time: ${time}`);
 };
 
 export default { setHeader, logRequest }
