@@ -1,8 +1,11 @@
+import BodyParser from './middleware/BodyParser';
 import Koa from 'koa';
 
+import chatRouter from './components/chat/Router';
+import Db from './db/Mongo';
 import Error from './middleware/Error';
 import ResponseTime from './middleware/ResponseTime';
-import Mongo from './db/Mongo';
+
 
 /**
  * Koa-application
@@ -11,7 +14,7 @@ export default class Application {
     constructor(port) {
         this.port = port;
         this.app = new Koa();
-        this.db = new Mongo();
+        this.db = new Db();
     }
 
     /**
@@ -27,9 +30,11 @@ export default class Application {
     addMiddleware() {
         const { app } = this;
         app.use(Error.emitter);
-        app.use(ResponseTime.logRequest);
-        app.use(ResponseTime.setHeader);
-        app.use(ctx => ctx.body = 'Hello!');
+        app.use(ResponseTime.logger);
+        app.use(ResponseTime.header);
+        app.use(BodyParser);
+        app.use(chatRouter.routes());
+        app.use(chatRouter.allowedMethods());
     }
 
     addErrorHandling() {
