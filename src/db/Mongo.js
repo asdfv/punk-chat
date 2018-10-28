@@ -14,7 +14,9 @@ export default class Mongo {
         this.reconnectTimeout = config.mongoReconnectTimeout;
         this.options = {
             useNewUrlParser: true,
-            auto_reconnect: true
+            auto_reconnect: true,
+            useCreateIndex: true,
+            useFindAndModify: false
         };
     }
 
@@ -31,7 +33,7 @@ export default class Mongo {
         mongoose.connection.on('connected', () => log.info(`Mongoose connected successfully: ${url}`));
         mongoose.connection.on('error', error => {
             log.error(`Mongoose connection error: ${error}`);
-            mongoose.disconnect();
+            mongoose.disconnect().then(() => log.info('Mongoose disconnected after error'));
         });
         mongoose.connection.on('disconnected', () => {
             log.warn(`Mongoose disconnected, try to reconnect after ${reconnectTimeout} ms`);

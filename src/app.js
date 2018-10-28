@@ -1,11 +1,14 @@
 import BodyParser from './middleware/BodyParser';
 import Koa from 'koa';
 
-import chatRouter from './components/chat/Router';
+import messageRouter from './components/message/Router';
 import Db from './db/Mongo';
 import Error from './middleware/Error';
-import ResponseTime from './middleware/ResponseTime';
-
+import generalChatRouter from './components/generalChat/Router';
+import requestLogger from './middleware/RequestLogger';
+import Header from './middleware/Header';
+import userRouter from './components/user/Router';
+import GeneralChatController from './components/generalChat/Controller';
 
 /**
  * Koa-application
@@ -15,26 +18,33 @@ export default class Application {
         this.port = port;
         this.app = new Koa();
         this.db = new Db();
+        this.generalChatController = new GeneralChatController();
     }
 
     /**
      * Start application
      */
     async start() {
+        const { app, port, db, generalChatController } = this;
         this.addMiddleware();
         this.addErrorHandling();
-        await this.db.connect();
-        await this.app.listen(this.port);
+        await db.connect();
+        await app.listen(port);
+        await generalChatController.createIfNotExists();
     }
 
     addMiddleware() {
         const { app } = this;
         app.use(Error.emitter);
-        app.use(ResponseTime.logger);
-        app.use(ResponseTime.header);
+        app.use(requestLogger);
+        app.use(Header.responseTimeHeader);
         app.use(BodyParser);
-        app.use(chatRouter.routes());
-        app.use(chatRouter.allowedMethods());
+        app.use(messageRouter.routes());
+        app.use(messageRouter.allowedMethods());
+        app.use(generalChatRouter.routes());
+        app.use(generalChatRouter.allowedMethods());
+        app.use(userRouter.routes());
+        app.use(userRouter.allowedMethods());
     }
 
     addErrorHandling() {

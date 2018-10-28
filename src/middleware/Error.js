@@ -19,7 +19,7 @@ const emitter = async (ctx, next) => {
  */
 const handler = (err, ctx) => {
     log.error(err.stack);
-    ctx.body = 'Something broke!';
+    ctx.body = `Something broke! Maybe: ${err.message}`;
 };
 
 const ERROR = 'error';
