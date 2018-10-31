@@ -39,6 +39,11 @@ export default class Application {
         app.use(requestLogger);
         app.use(Header.responseTimeHeader);
         app.use(BodyParser);
+        this.addRoutes();
+    }
+
+    addRoutes() {
+        const { app } = this;
         app.use(messageRouter.routes());
         app.use(messageRouter.allowedMethods());
         app.use(generalChatRouter.routes());

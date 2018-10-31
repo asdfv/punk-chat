@@ -20,7 +20,8 @@ export default class MessageController {
             await generalChatController.addMessage(savedMessage);
             ctx.body = savedMessage;
         } catch (err) {
-            log.error(`Error saving message: \n${message} \n${err}`);
+            log.error(`Error saving message: \n${message} \n${err.stack}`);
+            ctx.body = err.message
         }
     }
 }

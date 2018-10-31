@@ -1,8 +1,8 @@
+import mongoose from 'mongoose';
+
 import GeneralChat from './Model';
 import config from '../../config';
-
 import loggerFunc from '../../helpers/Logger';
-import mongoose from 'mongoose';
 
 const log = loggerFunc(module);
 const _id = mongoose.Types.ObjectId(config.generalChatId);
@@ -43,6 +43,7 @@ export default class GeneralChatController {
             await GeneralChat.findOneAndUpdate({ _id }, { $push: { messages: message._id } });
         } catch (err) {
             log.error(`Error while add message to general chat, ${message}, ${err}`);
+            throw err;
         }
     }
 
@@ -54,6 +55,7 @@ export default class GeneralChatController {
             await GeneralChat.findOneAndUpdate({ _id }, { $addToSet: { participants: participant._id } });
         } catch (err) {
             log.error(`Error adding participant to chat: ${participant}. Error: ${err.stack}`);
+            throw err;
         }
     }
 

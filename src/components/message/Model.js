@@ -2,9 +2,8 @@ import mongoose from 'mongoose';
 
 const { ObjectId } = mongoose.Schema.Types;
 const schema = {
-    _id: { type: ObjectId, default: mongoose.Types.ObjectId() },
-    text: { type: String, required: true },
-    owner: { type: ObjectId, require: true, ref: 'User' }
+    text: { type: String },
+    owner: { type: ObjectId, ref: 'User' }
 };
 const options = { timestamps: true };
 

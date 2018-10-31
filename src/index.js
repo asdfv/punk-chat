@@ -8,6 +8,9 @@ const log = loggerFunc(module);
 const port = config.applicationPort;
 const app = new Application(port);
 
-app.start().catch(error => log.error(`Error while starting app, ${error.stack}`));
-
-log.info(`App start on port ${port}`);
+/**
+ * Entry point of the application
+ */
+app.start()
+    .then(() => log.info(`App started on port ${port}`))
+    .catch(error => log.error(`Error while starting app, ${error.stack}`));
